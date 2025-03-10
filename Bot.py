@@ -40,4 +40,4 @@ if __name__ == '__main__':
         nest_asyncio.apply()
     except ImportError:
         pass
-    main()
+    asyncio.run(main())
