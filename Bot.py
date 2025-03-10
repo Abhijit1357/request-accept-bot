@@ -26,18 +26,11 @@ async def set_time(update, context):
             time_set = int(context.args[0]) * 60 * 60  # ghante mein time set karein
             channels[channel_id]['time'] = time_set
             await update.message.reply_text(f"Time set kiya gaya hai {context.args[0]} ghante ke liye channel {channel_id} ke liye.")
+            await asyncio.sleep(channels[channel_id]['time'])
+            context.bot.accept_join_request(update.effective_chat.id)
+            await update.message.reply_text("Join request accept ho gaya hai!")
         except (IndexError, ValueError):
             await update.message.reply_text("Invalid time. Kripya ghante mein time set karein.")
-    else:
-        await update.message.reply_text("Channel nahi set kiya gaya hai.")
-
-async def accept_join_request(update, context):
-    channel_id = update.effective_chat.id
-    if channel_id in channels:
-        await update.message.reply_text("Join request accept hone ke liye kuch der wait karein...")
-        await asyncio.sleep(channels[channel_id]['time'])
-        context.bot.accept_join_request(update.effective_chat.id)
-        await update.message.reply_text("Join request accept ho gaya hai!")
     else:
         await update.message.reply_text("Channel nahi set kiya gaya hai.")
 
@@ -46,8 +39,7 @@ def main():
     application.add_handler(CommandHandler('start', start))
     application.add_handler(CommandHandler('set_channel', set_channel))
     application.add_handler(CommandHandler('set_time', set_time))
-    application.add_handler(CommandHandler('accept_join_request', accept_join_request))
-    application.run_polling()
+    application.run_polling(timeout=30)  # 30 second ke liye bot chalayenge
 
 if __name__ == '__main__':
     main()
