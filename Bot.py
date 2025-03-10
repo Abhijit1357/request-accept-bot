@@ -1,5 +1,4 @@
-from telegram import Filters
-from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, MessageHandler, ApplicationBuilder, ConversationHandler, Application
+from telegram.ext import ApplicationBuilder, CommandHandler, CallbackQueryHandler, MessageHandler, ConversationHandler, filters
 from config import TOKEN
 from inline import inline_keyboard
 import re
@@ -40,13 +39,13 @@ async def set_time(update, context):
         await update.message.reply_text("Please provide time value.")
 
 def main():
-    application = Application.builder().token(TOKEN).build()
+    application = ApplicationBuilder().token(TOKEN).build()
     application.add_handler(CommandHandler('start', start))
     application.add_handler(CallbackQueryHandler(add_channel_callback, pattern='^add_channel$'))
     application.add_handler(ConversationHandler(
         entry_points=[CallbackQueryHandler(add_channel_callback, pattern='^add_channel$')],
         states={
-            "CHANNEL_ID": [MessageHandler(Filters.text, channel_id_handler)],
+            "CHANNEL_ID": [MessageHandler(filters.TEXT, channel_id_handler)],
         },
         fallbacks=[]
     ))
