@@ -39,7 +39,7 @@ app.add_handler(CommandHandler('help', help_command))
 
 async def main():
     try:
-        await app.run_polling()
+        await app.run_polling(drop_pending_updates=True)
     except Exception as e:
         logger.error(f"Error: {e}")
 
@@ -54,4 +54,4 @@ if __name__ == '__main__':
     try:
         loop.run_until_complete(main())
     finally:
-        loop.close()
+        pass
