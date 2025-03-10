@@ -13,19 +13,19 @@ async def add_channel_callback(update: Update, context: ContextTypes.DEFAULT_TYP
     await context.bot.send_message(chat_id=update.effective_chat.id, text="Channel ID?")
     return "CHANNEL_ID"
 
-def channel_id_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+async def channel_id_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     channel_id = update.message.text
-    context.bot.send_message(chat_id=update.effective_chat.id, text=f"Channel {channel_id} set kiya gaya hai.")
-    return ConversationHandler.END
+    await context.bot.send_message(chat_id=update.effective_chat.id, text=f"Channel {channel_id} set kiya gaya hai.")
+    return await ConversationHandler.END
 
 async def set_channel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> str:
     await update.message.reply_text("Kripya channel ka ID dena hoga.")
     return "CHANNEL_ID"
 
-def set_channel_id_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+async def set_channel_id_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     channel_id = update.message.text
-    context.bot.send_message(chat_id=update.effective_chat.id, text=f"Channel {channel_id} set kiya gaya hai.")
-    return ConversationHandler.END
+    await context.bot.send_message(chat_id=update.effective_chat.id, text=f"Channel {channel_id} set kiya gaya hai.")
+    return await ConversationHandler.END
 
 async def set_time(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     time_set = update.message.text
