@@ -1,4 +1,4 @@
-from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, MessageHandler
+from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, MessageHandler, ApplicationBuilder
 from config import TOKEN
 from inline import inline_keyboard
 import re
