@@ -1,4 +1,4 @@
-import asyncio, uvloop
+import asyncio
 from telegram.ext import ApplicationBuilder, CommandHandler, CallbackQueryHandler, MessageHandler, ConversationHandler, filters
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from config import TOKEN
