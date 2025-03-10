@@ -3,7 +3,6 @@ from telegram import Update
 from telegram.ext import ContextTypes
 from handlers import start, add_channel_callback, channel_id_handler, set_channel, set_channel_id_handler, set_time, about_me, close_message, help_command
 from config import TOKEN
-import threading
 import asyncio
 
 app = ApplicationBuilder().token(TOKEN).build()
@@ -38,4 +37,4 @@ if __name__ == '__main__':
         nest_asyncio.apply()
     except ImportError:
         pass
-    threading.Thread(target=asyncio.run, args=(main(),)).start()
+    asyncio.run(main())
