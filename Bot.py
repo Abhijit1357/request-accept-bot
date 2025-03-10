@@ -32,6 +32,7 @@ async def main() -> None:
     app.add_handler(CommandHandler('help', help_command))
     try:
         await app.run_polling()
+        await app.wait()
     except Exception as e:
         logger.error(e)
 
