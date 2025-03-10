@@ -1,7 +1,16 @@
 from telegram.ext import ApplicationBuilder, CommandHandler, CallbackQueryHandler, MessageHandler, ConversationHandler, filters
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from config import TOKEN
-from inline import inline_keyboard
 import re
+
+def inline_keyboard():
+    keyboard = [
+        [
+            InlineKeyboardButton("About Me", callback_data="about_me"),
+            InlineKeyboardButton("Close", callback_data="close"),
+        ]
+    ]
+    return InlineKeyboardMarkup(keyboard)
 
 async def start(update, context):
     await update.message.reply_text("Namaste!", reply_markup=inline_keyboard())
@@ -14,6 +23,16 @@ async def add_channel_callback(update, context):
     return "CHANNEL_ID"
 
 def channel_id_handler(update, context):
+    channel_id = update.message.text
+    # Channel ko set karna
+    context.bot.send_message(chat_id=update.effective_chat.id, text=f"Channel {channel_id} set kiya gaya hai.")
+    return ConversationHandler.END
+
+async def set_channel(update, context):
+    await update.message.reply_text("Kripya channel ka ID dena hoga.")
+    return "CHANNEL_ID"
+
+def set_channel_id_handler(update, context):
     channel_id = update.message.text
     # Channel ko set karna
     context.bot.send_message(chat_id=update.effective_chat.id, text=f"Channel {channel_id} set kiya gaya hai.")
@@ -39,18 +58,26 @@ async def set_time(update, context):
         await update.message.reply_text("Please provide time value.")
 
 def main():
-    application = ApplicationBuilder().token(TOKEN).build()
-    application.add_handler(CommandHandler('start', start))
-    application.add_handler(CallbackQueryHandler(add_channel_callback, pattern='^add_channel$'))
-    application.add_handler(ConversationHandler(
+    app = ApplicationBuilder().token(TOKEN).build()
+    app.add_handler(CommandHandler('start', start))
+    app.add_handler(CallbackQueryHandler(add_channel_callback, pattern='^add_channel$'))
+    app.add_handler(ConversationHandler(
         entry_points=[CallbackQueryHandler(add_channel_callback, pattern='^add_channel$')],
         states={
             "CHANNEL_ID": [MessageHandler(filters.TEXT, channel_id_handler)],
         },
         fallbacks=[]
     ))
-    application.add_handler(CommandHandler('set_time', set_time))
-    application.run_polling()
+    app.add_handler(ConversationHandler(
+        entry_points=[CommandHandler('set_channel', set_channel)],
+        states={
+            "CHANNEL_ID": [MessageHandler(filters.TEXT, set_channel_id_handler)],
+        },
+        fallbacks=[]
+    ))
+    app.add_handler(CommandHandler('set_time', set_time))
+    import threading
+    threading.Thread(target=app.run_polling).start()
 
 if __name__ == '__main__':
     main()
