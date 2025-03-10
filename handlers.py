@@ -49,6 +49,7 @@ async def set_time(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         keyboard.append([InlineKeyboardButton(channel, callback_data=channel)])
     reply_markup = InlineKeyboardMarkup(keyboard)
     await update.message.reply_text("Select a channel:", reply_markup=reply_markup)
+    return "SELECT_CHANNEL"
 
 async def set_time_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     query = update.callback_query
