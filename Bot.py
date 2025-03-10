@@ -1,5 +1,5 @@
 import asyncio
-from telegram.ext import Updater, CommandHandler, MessageHandler
+from telegram.ext import Updater, CommandHandler, MessageHandler, Application
 from config import TOKEN
 
 channels = {}
@@ -35,13 +35,11 @@ async def accept_join_request(update, context):
         await update.message.reply_text("Channel nahi set kiya gaya hai.")
 
 def main():
-    updater = Updater(TOKEN)
-    dp = updater.dispatcher
-    dp.add_handler(CommandHandler('set_channel', set_channel))
-    dp.add_handler(CommandHandler('set_time', set_time))
-    dp.add_handler(CommandHandler('accept_join_request', accept_join_request))
-    updater.start_polling()
-    updater.idle()
+    application = Application.builder().token(TOKEN).build()
+    application.add_handler(CommandHandler('set_channel', set_channel))
+    application.add_handler(CommandHandler('set_time', set_time))
+    application.add_handler(CommandHandler('accept_join_request', accept_join_request))
+    application.run_polling()
 
 if __name__ == '__main__':
     main()
