@@ -4,6 +4,15 @@ from telegram.ext import ContextTypes
 from handlers import start, add_channel_callback, channel_id_handler, set_channel, set_channel_id_handler, set_time, about_me, close_message, help_command
 from config import TOKEN
 import asyncio
+import logging
+
+#Enable logging
+logging.basicConfig(
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    level=logging.INFO
+)
+
+logger = logging.getLogger(__name__)
 
 app = ApplicationBuilder().token(TOKEN).build()
 
@@ -34,7 +43,8 @@ async def main():
         await app.idle()
     except Exception as e:
         await app.stop()
-        print(f"Error: {e}")
+        logger.error(f"Error: {e}")
+
 if __name__ == '__main__':
     try:
         import nest_asyncio
