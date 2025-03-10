@@ -79,7 +79,7 @@ async def main():
             "CHANNEL_ID": [MessageHandler(filters.TEXT, channel_id_handler)],
         },
         fallbacks=[],
-        per_message=False
+        per_message=True
     ))
     app.add_handler(ConversationHandler(
         entry_points=[CommandHandler('set_channel', set_channel)],
@@ -87,7 +87,7 @@ async def main():
             "CHANNEL_ID": [MessageHandler(filters.TEXT, set_channel_id_handler)],
         },
         fallbacks=[],
-        per_message=False
+        per_message=True
     ))
     app.add_handler(CommandHandler('set_time', set_time))
     app.add_handler(CallbackQueryHandler(about_me, pattern='^about_me$'))
@@ -96,6 +96,5 @@ async def main():
     await app.run_polling()
 
 if __name__ == '__main__':
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    loop.run_until_complete(main())
+    import asyncio
+    asyncio.run(main())
