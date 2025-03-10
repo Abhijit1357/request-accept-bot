@@ -16,7 +16,7 @@ async def add_channel_callback(update: Update, context: ContextTypes.DEFAULT_TYP
 async def channel_id_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     channel_id = update.message.text
     await context.bot.send_message(chat_id=update.effective_chat.id, text=f"Channel {channel_id} set successfully.")
-    return await ConversationHandler.END
+    return ConversationHandler.END
 
 async def set_channel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> str:
     await update.message.reply_text("Please enter the channel ID.")
@@ -34,7 +34,7 @@ async def set_channel_id_handler(update: Update, context: ContextTypes.DEFAULT_T
             await update.message.reply_text("Please make the bot an administrator in the channel.")
             return
         await update.message.reply_text("Channel added successfully.")
-        return await ConversationHandler.END
+        return ConversationHandler.END
     except Exception as e:
         await update.message.reply_text("Error: " + str(e))
         return
