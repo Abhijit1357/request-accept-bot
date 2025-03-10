@@ -1,5 +1,5 @@
 import asyncio
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+from telegram.ext import Updater, CommandHandler, MessageHandler
 from config import TOKEN
 
 channels = {}
