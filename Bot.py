@@ -29,8 +29,12 @@ app.add_handler(CallbackQueryHandler(close_message, pattern='^close$'))
 app.add_handler(CommandHandler('help', help_command))
 
 async def main():
-    await app.run_polling()
-
+    try:
+        await app.start()
+        await app.idle()
+    except Exception as e:
+        await app.stop()
+        print(f"Error: {e}")
 if __name__ == '__main__':
     try:
         import nest_asyncio
@@ -41,7 +45,5 @@ if __name__ == '__main__':
     asyncio.set_event_loop(loop)
     try:
         loop.run_until_complete(main())
-    except Exception as e:
-        print(e)
     finally:
         loop.close()
