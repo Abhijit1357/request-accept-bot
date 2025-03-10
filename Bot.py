@@ -3,6 +3,9 @@ from telegram.ext import ApplicationBuilder, CommandHandler, CallbackQueryHandle
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from config import TOKEN
 import re
+import logging
+
+logging.basicConfig(level=logging.ERROR)
 
 def inline_keyboard():
     keyboard = [
@@ -55,12 +58,12 @@ async def set_time(update, context):
     else:
         await update.message.reply_text("Please provide time value.")
 
-def about_me(update, context):
+async def about_me(update, context):
     message = "◈ ᴄʀᴇᴀᴛᴏʀ: Owner\n◈ ꜰᴏᴜɴᴅᴇʀ: \n◈ ᴄʜᴀɴɴᴇʟ: Ana"
-    context.bot.edit_message_text(chat_id=update.effective_chat.id, message_id=update.effective_message.message_id, text=message)
+    await context.bot.edit_message_text(chat_id=update.effective_chat.id, message_id=update.effective_message.message_id, text=message)
 
-def close_message(update, context):
-    context.bot.delete_message(chat_id=update.effective_chat.id, message_id=update.effective_message.message_id)
+async def close_message(update, context):
+    await context.bot.delete_message(chat_id=update.effective_chat.id, message_id=update.effective_message.message_id)
 
 def help_command(update, context):
     message = "Hello! This bot can help you to set channel and time. Here are the commands:\n/start - Start the bot\n/set_channel - Set the channel\n/set_time - Set the time\n/help - Show this help message"
