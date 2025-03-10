@@ -39,4 +39,9 @@ if __name__ == '__main__':
         pass
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
-    loop.run_until_complete(main())
+    try:
+        loop.run_until_complete(main())
+    except Exception as e:
+        print(e)
+    finally:
+        loop.close()
