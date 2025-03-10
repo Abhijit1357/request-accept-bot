@@ -6,8 +6,11 @@ channels = {}
 
 async def set_channel(update, context):
     channel_id = update.effective_chat.id
-    channels[channel_id] = {'time': 4 * 60 * 60}  # 4 ghante ke liye default time set
-    await update.message.reply_text(f"Channel set kiya gaya hai {channel_id} ke liye.")
+    if channel_id not in channels:
+        channels[channel_id] = {'time': 4 * 60 * 60}  # 4 ghante ke liye default time set
+        await update.message.reply_text(f"Channel set kiya gaya hai {channel_id} ke liye.")
+    else:
+        await update.message.reply_text(f"Channel {channel_id} pehle se hi set hai.")
 
 async def set_time(update, context):
     channel_id = update.effective_chat.id
@@ -32,7 +35,7 @@ async def accept_join_request(update, context):
         await update.message.reply_text("Channel nahi set kiya gaya hai.")
 
 def main():
-    updater = Updater(TOKEN, use_context=True)
+    updater = Updater(TOKEN)
     dp = updater.dispatcher
     dp.add_handler(CommandHandler('set_channel', set_channel))
     dp.add_handler(CommandHandler('set_time', set_time))
