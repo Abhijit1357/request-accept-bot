@@ -1,47 +1,55 @@
-import tracemalloc; tracemalloc.start()
-import asyncio
-import logging
+from telegram.ext import CommandHandler, CallbackQueryHandler, MessageHandler, ConversationHandler, filters
 from telegram import Update
-from telegram.ext import ApplicationBuilder, CommandHandler, CallbackQueryHandler, MessageHandler, ConversationHandler, filters, ContextTypes
-from handlers import start, add_channel_callback, channel_id_handler, set_channel, set_channel_id_handler, set_time, about_me, close_message, help_command
-from config import TOKEN
-logging.basicConfig(level=logging.ERROR, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__)
-async def main() -> None:
-    app = ApplicationBuilder().token(TOKEN).build()
-    app.add_handler(CommandHandler('start', start))
-    app.add_handler(CallbackQueryHandler(add_channel_callback, pattern='^add_channel$'))
-    app.add_handler(ConversationHandler(
-        entry_points=[CommandHandler('add_channel', add_channel_callback)],
-        states={
-            "CHANNEL_ID": [MessageHandler(filters.TEXT, channel_id_handler)],
-        },
-        fallbacks=[],
-    ))
-    app.add_handler(ConversationHandler(
-        entry_points=[CommandHandler('set_channel', set_channel)],
-        states={
-            "CHANNEL_ID": [MessageHandler(filters.TEXT, set_channel_id_handler)],
-        },
-        fallbacks=[],
-    ))
-    app.add_handler(CommandHandler('set_time', set_time))
-    app.add_handler(CallbackQueryHandler(about_me, pattern='^about_me$'))
-    app.add_handler(CallbackQueryHandler(close_message, pattern='^close$'))
-    app.add_handler(CommandHandler('help', help_command))
-    try:
-        await app.start()
-        await app.idle()
-    except Exception as e:
-        await app.stop()
-        logger.error(e)
-if __name__ == '__main__':
-    try:
-        import nest_asyncio
-        nest_asyncio.apply()
-    except ImportError:
-        pass
-    try:
-        asyncio.run(main())
-    except Exception as e:
-        print(e)
+from telegram.ext import ContextTypes
+from inline import inline_keyboard
+import re
+
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    await update.message.reply_text("Hello! Welcome to our bot. Type /help to know more about our bot.", reply_markup=inline_keyboard())
+
+async def add_channel_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> str:
+    await update.callback_query.answer()
+    await update.callback_query.edit_message_text("Kripya channel ka ID dena hoga.")
+    await context.bot.send_message(chat_id=update.effective_chat.id, text="Channel ID?")
+    return "CHANNEL_ID"
+
+async def channel_id_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    channel_id = update.message.text
+    await context.bot.send_message(chat_id=update.effective_chat.id, text=f"Channel {channel_id} set kiya gaya hai.")
+    return ConversationHandler.END
+
+async def set_channel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> str:
+    await update.message.reply_text("Kripya channel ka ID dena hoga.")
+    return "CHANNEL_ID"
+
+async def set_channel_id_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    channel_id = update.message.text
+    await context.bot.send_message(chat_id=update.effective_chat.id, text=f"Channel {channel_id} set kiya gaya hai.")
+    return ConversationHandler.END
+
+async def set_time(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    time_set = update.message.text
+    match = re.match(r"(\d+)(m|h|d)", time_set)
+    if match:
+        value = int(match.group(1))
+        unit = match.group(2)
+        if unit == "m":
+            time_set = value * 60
+        elif unit == "h":
+            time_set = value * 60 * 60
+        elif unit == "d":
+            time_set = value * 60 * 60 * 24
+        await update.message.reply_text(f"Time set kiya gaya hai {time_set} seconds ke liye.")
+    else:
+        await update.message.reply_text("Invalid time format. Please use 1m, 2h, or 1d.")
+
+async def about_me(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    message = "◈ ᴄʀᴇᴀᴛᴏʀ: Owner\n◈ ꜰᴏᴜɴᴅᴇʀ: \n◈ ᴄʜᴀɴɴᴇʟ: Ana"
+    await context.bot.edit_message_text(chat_id=update.effective_chat.id, message_id=update.effective_message.message_id, text=message)
+
+async def close_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    await context.bot.delete_message(chat_id=update.effective_chat.id, message_id=update.effective_message.message_id)
+
+async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    message = "Hello! This bot can help you to set channel and time. Here are the commands:\n/start - Start the bot\n/set_channel - Set the channel\n/set_time - Set the time\n/help - Show this help message"
+    await context.bot.send_message(chat_id=update.effective_chat.id, text=message)
