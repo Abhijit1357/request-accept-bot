@@ -5,13 +5,14 @@ import asyncio
 import logging
 
 logging.basicConfig(level=logging.ERROR)
+logger = logging.getLogger(__name__)
 
 async def main() -> None:
     app = ApplicationBuilder().token(TOKEN).build()
     app.add_handler(CommandHandler('start', start))
     app.add_handler(CallbackQueryHandler(add_channel_callback, pattern='^add_channel$'))
     app.add_handler(ConversationHandler(
-        entry_points=[CallbackQueryHandler(add_channel_callback, pattern='^add_channel$')],
+        entry_points=[CommandHandler('add_channel', add_channel_callback)],
         states={
             "CHANNEL_ID": [MessageHandler(filters.TEXT, channel_id_handler)],
         },
