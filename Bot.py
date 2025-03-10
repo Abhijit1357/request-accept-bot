@@ -3,16 +3,6 @@ from telegram import Update
 from telegram.ext import ContextTypes
 from handlers import start, add_channel_callback, channel_id_handler, set_channel, set_channel_id_handler, set_time, about_me, close_message, help_command
 from config import TOKEN
-import asyncio
-import logging
-
-#Enable logging
-logging.basicConfig(
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    level=logging.INFO
-)
-
-logger = logging.getLogger(__name__)
 
 app = ApplicationBuilder().token(TOKEN).build()
 
@@ -37,21 +27,13 @@ app.add_handler(CallbackQueryHandler(about_me, pattern='^about_me$'))
 app.add_handler(CallbackQueryHandler(close_message, pattern='^close$'))
 app.add_handler(CommandHandler('help', help_command))
 
-async def main():
-    try:
-        await app.run_polling(drop_pending_updates=True)
-    except Exception as e:
-        logger.error(f"Error: {e}")
-
 if __name__ == '__main__':
     try:
         import nest_asyncio
         nest_asyncio.apply()
     except ImportError:
         pass
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
     try:
-        loop.run_until_complete(main())
-    finally:
-        pass
+        app.run_polling()
+    except Exception as e:
+        print(e)
