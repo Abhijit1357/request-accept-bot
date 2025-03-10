@@ -1,45 +1,56 @@
-import asyncio
-from telegram.ext import Updater, CommandHandler, MessageHandler, Application
+from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, MessageHandler
 from config import TOKEN
-
-channels = {}
+from inline import inline_keyboard
+import re
 
 async def start(update, context):
-    await update.message.reply_text("Namaste! Main aapka bot hoon. Mujhe apne channel ka admin banaein aur `/set_channel` command ke saath forward message ID dena hoga.")
+    await update.message.reply_text("Namaste!", reply_markup=inline_keyboard())
 
-async def set_channel(update, context):
-    channel_id = update.effective_chat.id
-    if channel_id not in channels:
-        if len(context.args) > 0:
-            forward_message_id = int(context.args[0])
-            channels[channel_id] = {'time': 4 * 60 * 60, 'forward_message': forward_message_id}  # 4 ghante ke liye default time set
-            await update.message.reply_text(f"Channel set kiya gaya hai {channel_id} ke liye.")
-        else:
-            await update.message.reply_text(f"Channel set karne ke liye forward message ID dena hoga.")
-    else:
-        await update.message.reply_text(f"Channel {channel_id} pehle se hi set hai.")
+async def add_channel_callback(update, context):
+    await update.callback_query.answer()
+    await update.callback_query.edit_message_text("Kripya channel ka ID dena hoga.")
+    # Channel ID ko input ke roop mein lena
+    await context.bot.send_message(chat_id=update.effective_chat.id, text="Channel ID?")
+    return "CHANNEL_ID"
+
+def channel_id_handler(update, context):
+    channel_id = update.message.text
+    # Channel ko set karna
+    context.bot.send_message(chat_id=update.effective_chat.id, text=f"Channel {channel_id} set kiya gaya hai.")
+    return ConversationHandler.END
 
 async def set_time(update, context):
-    channel_id = update.effective_chat.id
-    if channel_id in channels:
-        try:
-            time_set = int(context.args[0]) * 60 * 60  # ghante mein time set karein
-            channels[channel_id]['time'] = time_set
-            await update.message.reply_text(f"Time set kiya gaya hai {context.args[0]} ghante ke liye channel {channel_id} ke liye.")
-            await asyncio.sleep(channels[channel_id]['time'])
-            context.bot.accept_join_request(update.effective_chat.id)
-            await update.message.reply_text("Join request accept ho gaya hai!")
-        except (IndexError, ValueError):
-            await update.message.reply_text("Invalid time. Kripya ghante mein time set karein.")
+    if len(context.args) > 0:
+        time_set = context.args[0]
+        match = re.match(r"(\d+)(m|h|d)", time_set)
+        if match:
+            value = int(match.group(1))
+            unit = match.group(2)
+            if unit == "m":
+                time_set = value * 60
+            elif unit == "h":
+                time_set = value * 60 * 60
+            elif unit == "d":
+                time_set = value * 60 * 60 * 24
+            await update.message.reply_text(f"Time set kiya gaya hai {time_set} seconds ke liye.")
+        else:
+            await update.message.reply_text("Invalid time format. Please use 1m, 2h, or 1d.")
     else:
-        await update.message.reply_text("Channel nahi set kiya gaya hai.")
+        await update.message.reply_text("Please provide time value.")
 
 def main():
     application = Application.builder().token(TOKEN).build()
     application.add_handler(CommandHandler('start', start))
-    application.add_handler(CommandHandler('set_channel', set_channel))
+    application.add_handler(CallbackQueryHandler(add_channel_callback, pattern='^add_channel$'))
+    application.add_handler(ConversationHandler(
+        entry_points=[CallbackQueryHandler(add_channel_callback, pattern='^add_channel$')],
+        states={
+            "CHANNEL_ID": [MessageHandler(Filters.text, channel_id_handler)],
+        },
+        fallbacks=[]
+    ))
     application.add_handler(CommandHandler('set_time', set_time))
-    application.run_polling(timeout=30)  # 30 second ke liye bot chalayenge
+    application.run_polling()
 
 if __name__ == '__main__':
     main()
