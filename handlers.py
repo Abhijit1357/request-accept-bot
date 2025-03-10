@@ -50,6 +50,6 @@ async def about_me(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 async def close_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await context.bot.delete_message(chat_id=update.effective_chat.id, message_id=update.effective_message.message_id)
 
-def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     message = "Hello! This bot can help you to set channel and time. Here are the commands:\n/start - Start the bot\n/set_channel - Set the channel\n/set_time - Set the time\n/help - Show this help message"
-    context.bot.send_message(chat_id=update.effective_chat.id, text=message)
+    await context.bot.send_message(chat_id=update.effective_chat.id, text=message)
