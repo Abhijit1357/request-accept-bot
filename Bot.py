@@ -1,4 +1,4 @@
-import asyncio
+import asyncio, uvloop
 from telegram.ext import ApplicationBuilder, CommandHandler, CallbackQueryHandler, MessageHandler, ConversationHandler, filters
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from config import TOKEN
@@ -96,6 +96,5 @@ async def main():
     await app.run_polling()
 
 if __name__ == '__main__':
-    import uvloop
     uvloop.install()
-    main()
+    asyncio.run(main())
