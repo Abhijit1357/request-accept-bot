@@ -1,6 +1,6 @@
 from telegram.ext import CommandHandler, CallbackQueryHandler, MessageHandler, ConversationHandler, filters
 #from telegram import Update, ContextTypes
-from keyboard import inline_keyboard
+from inline import inline_keyboard
 import re
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
