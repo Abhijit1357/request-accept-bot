@@ -3,6 +3,7 @@ from telegram import Update
 from telegram.ext import ContextTypes
 from handlers import start, add_channel_callback, channel_id_handler, set_channel, set_channel_id_handler, set_time, about_me, close_message, help_command
 from config import TOKEN
+import threading
 import asyncio
 
 app = ApplicationBuilder().token(TOKEN).build()
@@ -28,10 +29,13 @@ app.add_handler(CallbackQueryHandler(about_me, pattern='^about_me$'))
 app.add_handler(CallbackQueryHandler(close_message, pattern='^close$'))
 app.add_handler(CommandHandler('help', help_command))
 
+async def main():
+    await app.run_polling()
+
 if __name__ == '__main__':
     try:
         import nest_asyncio
         nest_asyncio.apply()
     except ImportError:
         pass
-    asyncio.run(app.run_polling())
+    threading.Thread(target=asyncio.run, args=(main(),)).start()
