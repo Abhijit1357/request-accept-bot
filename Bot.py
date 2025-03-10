@@ -59,7 +59,7 @@ async def set_time(update, context):
         await update.message.reply_text("Please provide time value.")
 
 async def about_me(update, context):
-    message = "◈ ᴄʀᴇᴀᴛᴏʀ: Owner\n◈ ꜰᴏᴜɴᴅᴇʀ: \n◈ ᴄʜᴀɴɴᴇʟ: Ana"
+    message = "◈ ᴄʀᴇᴀᴛᴏʀ: Owner\n◈ ꜰᴏᴜɴᴅᴇʀ: \n◈ ᴄʜᴀɴɴᴇʟ: "
     await context.bot.edit_message_text(chat_id=update.effective_chat.id, message_id=update.effective_message.message_id, text=message)
 
 async def close_message(update, context):
@@ -78,14 +78,16 @@ def main():
         states={
             "CHANNEL_ID": [MessageHandler(filters.TEXT, channel_id_handler)],
         },
-        fallbacks=[]
+        fallbacks=[],
+        per_message=True
     ))
     app.add_handler(ConversationHandler(
         entry_points=[CommandHandler('set_channel', set_channel)],
         states={
             "CHANNEL_ID": [MessageHandler(filters.TEXT, set_channel_id_handler)],
         },
-        fallbacks=[]
+        fallbacks=[],
+        per_message=True
     ))
     app.add_handler(CommandHandler('set_time', set_time))
     app.add_handler(CallbackQueryHandler(about_me, pattern='^about_me$'))
