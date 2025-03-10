@@ -1,8 +1,9 @@
+import asyncio
+import logging
+import nest_asyncio
 from telegram.ext import ApplicationBuilder, CommandHandler, CallbackQueryHandler, MessageHandler, ConversationHandler, filters
 from handlers import start, add_channel_callback, channel_id_handler, set_channel, set_channel_id_handler, set_time, about_me, close_message, help_command
 from config import TOKEN
-import asyncio
-import logging
 
 logging.basicConfig(level=logging.ERROR)
 logger = logging.getLogger(__name__)
@@ -35,4 +36,5 @@ async def main() -> None:
         logger.error(e)
 
 if __name__ == '__main__':
+    nest_asyncio.apply()
     asyncio.run(main())
