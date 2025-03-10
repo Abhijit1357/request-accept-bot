@@ -1,15 +1,12 @@
-import tracemalloc
-tracemalloc.start()
+import tracemalloc; tracemalloc.start()
 import asyncio
 import logging
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, CallbackQueryHandler, MessageHandler, ConversationHandler, filters, ContextTypes
 from handlers import start, add_channel_callback, channel_id_handler, set_channel, set_channel_id_handler, set_time, about_me, close_message, help_command
 from config import TOKEN
-
-logging.basicConfig(level=logging.ERROR)
+logging.basicConfig(level=logging.ERROR, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
-
 async def main() -> None:
     app = ApplicationBuilder().token(TOKEN).build()
     app.add_handler(CommandHandler('start', start))
@@ -32,14 +29,12 @@ async def main() -> None:
     app.add_handler(CallbackQueryHandler(about_me, pattern='^about_me$'))
     app.add_handler(CallbackQueryHandler(close_message, pattern='^close$'))
     app.add_handler(CommandHandler('help', help_command))
-
     try:
         await app.start()
         await app.idle()
     except Exception as e:
         await app.stop()
         logger.error(e)
-
 if __name__ == '__main__':
     try:
         import nest_asyncio
