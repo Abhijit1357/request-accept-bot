@@ -1,3 +1,4 @@
+import asyncio
 from telegram.ext import ApplicationBuilder, CommandHandler, CallbackQueryHandler, MessageHandler, ConversationHandler, filters
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from config import TOKEN
@@ -18,13 +19,11 @@ async def start(update, context):
 async def add_channel_callback(update, context):
     await update.callback_query.answer()
     await update.callback_query.edit_message_text("Kripya channel ka ID dena hoga.")
-    # Channel ID ko input ke roop mein lena
     await context.bot.send_message(chat_id=update.effective_chat.id, text="Channel ID?")
     return "CHANNEL_ID"
 
 def channel_id_handler(update, context):
     channel_id = update.message.text
-    # Channel ko set karna
     context.bot.send_message(chat_id=update.effective_chat.id, text=f"Channel {channel_id} set kiya gaya hai.")
     return ConversationHandler.END
 
@@ -34,7 +33,6 @@ async def set_channel(update, context):
 
 def set_channel_id_handler(update, context):
     channel_id = update.message.text
-    # Channel ko set karna
     context.bot.send_message(chat_id=update.effective_chat.id, text=f"Channel {channel_id} set kiya gaya hai.")
     return ConversationHandler.END
 
@@ -90,8 +88,7 @@ def main():
     app.add_handler(CallbackQueryHandler(about_me, pattern='^about_me$'))
     app.add_handler(CallbackQueryHandler(close_message, pattern='^close$'))
     app.add_handler(CommandHandler('help', help_command))
-    import threading
-    threading.Thread(target=app.run_polling).start()
+    asyncio.run(app.run_polling())
 
 if __name__ == '__main__':
     main()
