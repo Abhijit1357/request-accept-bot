@@ -28,23 +28,20 @@ def set_channel_id_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -
     return ConversationHandler.END
 
 async def set_time(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    if len(context.args) > 0:
-        time_set = context.args[0]
-        match = re.match(r"(\d+)(m|h|d)", time_set)
-        if match:
-            value = int(match.group(1))
-            unit = match.group(2)
-            if unit == "m":
-                time_set = value * 60
-            elif unit == "h":
-                time_set = value * 60 * 60
-            elif unit == "d":
-                time_set = value * 60 * 60 * 24
-            await update.message.reply_text(f"Time set kiya gaya hai {time_set} seconds ke liye.")
-        else:
-            await update.message.reply_text("Invalid time format. Please use 1m, 2h, or 1d.")
+    time_set = update.message.text
+    match = re.match(r"(\d+)(m|h|d)", time_set)
+    if match:
+        value = int(match.group(1))
+        unit = match.group(2)
+        if unit == "m":
+            time_set = value * 60
+        elif unit == "h":
+            time_set = value * 60 * 60
+        elif unit == "d":
+            time_set = value * 60 * 60 * 24
+        await update.message.reply_text(f"Time set kiya gaya hai {time_set} seconds ke liye.")
     else:
-        await update.message.reply_text("Please provide time value.")
+        await update.message.reply_text("Invalid time format. Please use 1m, 2h, or 1d.")
 
 async def about_me(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     message = "◈ ᴄʀᴇᴀᴛᴏʀ: Owner\n◈ ꜰᴏᴜɴᴅᴇʀ: \n◈ ᴄʜᴀɴɴᴇʟ: Ana"
