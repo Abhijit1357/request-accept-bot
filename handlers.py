@@ -33,7 +33,9 @@ async def set_channel_id_handler(update: Update, context: ContextTypes.DEFAULT_T
         if admin_status.status != "administrator":
             await update.message.reply_text("Please make the bot an administrator in the channel.")
             return
-        await update.message.reply_text("Channel added successfully.")
+        channel_name = channel.title
+        channel_link = f"https://t.me/{channel.username}"
+        await update.message.reply_text(f"Channel '{channel_name}' ({channel_link}) added successfully.")
         return ConversationHandler.END
     except Exception as e:
         await update.message.reply_text("Error: " + str(e))
@@ -65,3 +67,26 @@ async def close_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     message = "Hello! This bot can help you to set channel and time. Here are the commands:\n/start - Start the bot\n/set_channel - Set the channel\n/set_time - Set the time\n/help - Show this help message"
     await context.bot.send_message(chat_id=update.effective_chat.id, text=message)
+
+def main():
+    TOKEN = "YOUR_BOT_TOKEN"
+    updater = Updater(TOKEN, use_context=True)
+
+    dp = updater.dispatcher
+
+    dp.add_handler(CommandHandler("start", start))
+    dp.add_handler(CommandHandler("help", help_command))
+    dp.add_handler(CommandHandler("set_channel", set_channel))
+    dp.add_handler(ConversationHandler(
+        entry_points=[CommandHandler("set_channel", set_channel)],
+        states={
+            "CHANNEL_ID": [MessageHandler(filters.TEXT & ~filters.COMMAND, set_channel_id_handler)],
+        },
+        fallbacks=[]
+    ))
+
+    updater.start_polling()
+    updater.idle()
+
+if __name__ == "__main__":
+    main()
