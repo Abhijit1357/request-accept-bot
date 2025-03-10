@@ -3,6 +3,7 @@ from handlers import start, add_channel_callback, channel_id_handler, set_channe
 from config import TOKEN
 import asyncio
 import logging
+import nest_asyncio
 
 logging.basicConfig(level=logging.ERROR)
 logger = logging.getLogger(__name__)
@@ -29,7 +30,11 @@ async def main() -> None:
     app.add_handler(CallbackQueryHandler(about_me, pattern='^about_me$'))
     app.add_handler(CallbackQueryHandler(close_message, pattern='^close$'))
     app.add_handler(CommandHandler('help', help_command))
-    app.start_polling()
+    try:
+        await app.run_polling()
+    except Exception as e:
+        logger.error(e)
 
 if __name__ == '__main__':
+    nest_asyncio.apply()
     asyncio.run(main())
