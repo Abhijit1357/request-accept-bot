@@ -9,23 +9,35 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
 async def add_channel_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> str:
     await update.callback_query.answer()
-    await update.callback_query.edit_message_text("Kripya channel ka ID dena hoga.")
+    await update.callback_query.edit_message_text("Please enter the channel ID.")
     await context.bot.send_message(chat_id=update.effective_chat.id, text="Channel ID?")
     return "CHANNEL_ID"
 
 async def channel_id_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     channel_id = update.message.text
-    await context.bot.send_message(chat_id=update.effective_chat.id, text=f"Channel {channel_id} set kiya gaya hai.")
+    await context.bot.send_message(chat_id=update.effective_chat.id, text=f"Channel {channel_id} set successfully.")
     return await ConversationHandler.END
 
 async def set_channel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> str:
-    await update.message.reply_text("Kripya channel ka ID dena hoga.")
+    await update.message.reply_text("Please enter the channel ID.")
     return "CHANNEL_ID"
 
 async def set_channel_id_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     channel_id = update.message.text
-    await context.bot.send_message(chat_id=update.effective_chat.id, text=f"Channel {channel_id} set kiya gaya hai.")
-    return await ConversationHandler.END
+    try:
+        channel = await context.bot.get_chat(channel_id)
+        if not channel:
+            await update.message.reply_text("Channel not found. Please check the ID.")
+            return
+        admin_status = await context.bot.get_chat_member(channel_id, context.bot.id)
+        if admin_status.status != "administrator":
+            await update.message.reply_text("Please make the bot an administrator in the channel.")
+            return
+        await update.message.reply_text("Channel added successfully.")
+        return await ConversationHandler.END
+    except Exception as e:
+        await update.message.reply_text("Error: " + str(e))
+        return
 
 async def set_time(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     time_set = update.message.text
@@ -39,12 +51,12 @@ async def set_time(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             time_set = value * 60 * 60
         elif unit == "d":
             time_set = value * 60 * 60 * 24
-        await update.message.reply_text(f"Time set kiya gaya hai {time_set} seconds ke liye.")
+        await update.message.reply_text(f"Time set successfully for {time_set} seconds.")
     else:
         await update.message.reply_text("Invalid time format. Please use 1m, 2h, or 1d.")
 
 async def about_me(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    message = "◈ ᴄʀᴇᴀᴛᴏʀ: Owner\n◈ ꜰᴏᴜɴᴅᴇʀ: \n◈ ᴄʜᴀɴɴᴇʟ: Ana"
+    message = "Creator: Owner\nFounder: \nChannel: Ana"
     await context.bot.edit_message_text(chat_id=update.effective_chat.id, message_id=update.effective_message.message_id, text=message)
 
 async def close_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
