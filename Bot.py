@@ -39,10 +39,8 @@ app.add_handler(CommandHandler('help', help_command))
 
 async def main():
     try:
-        await app.start()
-        await app.idle()
+        await app.run_polling()
     except Exception as e:
-        await app.stop()
         logger.error(f"Error: {e}")
 
 if __name__ == '__main__':
