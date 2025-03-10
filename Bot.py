@@ -29,7 +29,7 @@ async def main() -> None:
     app.add_handler(CallbackQueryHandler(about_me, pattern='^about_me$'))
     app.add_handler(CallbackQueryHandler(close_message, pattern='^close$'))
     app.add_handler(CommandHandler('help', help_command))
-    await app.start_polling()
+    await app.run_polling()
     await asyncio.Event().wait()
 
 if __name__ == '__main__':
