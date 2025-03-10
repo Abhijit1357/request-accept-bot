@@ -13,7 +13,7 @@ def inline_keyboard():
     return InlineKeyboardMarkup(keyboard)
 
 async def start(update, context):
-    await update.message.reply_text("Namaste!", reply_markup=inline_keyboard())
+    await update.message.reply_text("Hello! Welcome to our bot. Type /help to know more about our bot.", reply_markup=inline_keyboard())
 
 async def add_channel_callback(update, context):
     await update.callback_query.answer()
@@ -57,6 +57,17 @@ async def set_time(update, context):
     else:
         await update.message.reply_text("Please provide time value.")
 
+def about_me(update, context):
+    message = "◈ ᴄʀᴇᴀᴛᴏʀ: Owner\n◈ ꜰᴏᴜɴᴅᴇʀ: \n◈ ᴄʜᴀɴɴᴇʟ: Ana"
+    context.bot.edit_message_text(chat_id=update.effective_chat.id, message_id=update.effective_message.message_id, text=message)
+
+def close_message(update, context):
+    context.bot.delete_message(chat_id=update.effective_chat.id, message_id=update.effective_message.message_id)
+
+def help_command(update, context):
+    message = "Hello! This bot can help you to set channel and time. Here are the commands:\n/start - Start the bot\n/set_channel - Set the channel\n/set_time - Set the time\n/help - Show this help message"
+    context.bot.send_message(chat_id=update.effective_chat.id, text=message)
+
 def main():
     app = ApplicationBuilder().token(TOKEN).build()
     app.add_handler(CommandHandler('start', start))
@@ -76,6 +87,9 @@ def main():
         fallbacks=[]
     ))
     app.add_handler(CommandHandler('set_time', set_time))
+    app.add_handler(CallbackQueryHandler(about_me, pattern='^about_me$'))
+    app.add_handler(CallbackQueryHandler(close_message, pattern='^close$'))
+    app.add_handler(CommandHandler('help', help_command))
     import threading
     threading.Thread(target=app.run_polling).start()
 
