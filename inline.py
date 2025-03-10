@@ -2,7 +2,9 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
 def inline_keyboard():
     keyboard = [
-        [InlineKeyboardButton("Add Channel", callback_data="add_channel")],
-        [InlineKeyboardButton("Channel Check", callback_data="channel_check")],
+        [
+            InlineKeyboardButton("About Me", callback_data="about_me"),
+            InlineKeyboardButton("Close", callback_data="close"),
+        ]
     ]
     return InlineKeyboardMarkup(keyboard)
