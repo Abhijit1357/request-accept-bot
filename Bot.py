@@ -17,7 +17,6 @@ async def main() -> None:
             "CHANNEL_ID": [MessageHandler(filters.TEXT, channel_id_handler)],
         },
         fallbacks=[],
-        per_message=True
     ))
     app.add_handler(ConversationHandler(
         entry_points=[CommandHandler('set_channel', set_channel)],
@@ -25,7 +24,6 @@ async def main() -> None:
             "CHANNEL_ID": [MessageHandler(filters.TEXT, set_channel_id_handler)],
         },
         fallbacks=[],
-        per_message=True
     ))
     app.add_handler(CommandHandler('set_time', set_time))
     app.add_handler(CallbackQueryHandler(about_me, pattern='^about_me$'))
