@@ -31,7 +31,7 @@ async def main() -> None:
     app.add_handler(CallbackQueryHandler(close_message, pattern='^close$'))
     app.add_handler(CommandHandler('help', help_command))
     try:
-        await app.start_polling()
+        await app.run_polling()
     except Exception as e:
         logger.error(e)
 
